@@ -7,7 +7,7 @@ export function AuthProvider({ children }) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem("access_token");
+        const token = localStorage.getItem("access_token") || sessionStorage.getItem("access_token");
         setIsAuthenticated(!!token); // Token varsa true, yoksa false olarak ayarla
     }, []);
 

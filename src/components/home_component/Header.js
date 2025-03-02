@@ -22,6 +22,8 @@ export default function Header({ pageClass }) {
     const handleLogout = () => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
+        sessionStorage.removeItem("access_token");
+        sessionStorage.removeItem("refresh_token");
         setIsAuthenticated(false);
         router.push("/");
     };
@@ -62,7 +64,7 @@ export default function Header({ pageClass }) {
                         <li>
                             <Link href="/about" className={pathname === "/about" ? "active" : ""}>Hakkında</Link>
                         </li>
-                        <li className="dropdown">
+                        <li className="dropdown ml-5">
                             <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="hover:text-blue-500 flex items-center">
                                 Özellikler <span className="ml-2">▼</span>
                             </button>

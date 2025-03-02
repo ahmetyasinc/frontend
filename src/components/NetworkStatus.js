@@ -1,6 +1,8 @@
 "use client"; // Next.js'in client bileşeni olarak kullanmasını sağlar
 
 import { useState, useEffect } from "react";
+import { MdWifiOff } from "react-icons/md";
+
 
 function NetworkStatus() {
   const [isOnline, setIsOnline] = useState(true); // Varsayılan olarak online kabul ediyoruz
@@ -39,7 +41,7 @@ function NetworkStatus() {
         left: 0,
         width: "100%",
         height: "100%",
-        backgroundColor: "rgba(0, 0, 0, 0.5)", // Arka planı biraz karart
+        // backgroundColor: "rgba(0, 0, 0, 0.5)", Arka planı biraz karart
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -50,18 +52,22 @@ function NetworkStatus() {
       <div
         style={{
           padding: "15px 30px",
-          backgroundColor: "red",
-          color: "white",
-          borderRadius: "8px", //⚠️ Bağlantınız koptu! Lütfen internetinizi kontrol edin.
+          backgroundColor: "yellow",
+          color: "black", // Yazı rengini siyah yap
+          borderRadius: "8px",
           fontWeight: "bold",
           fontSize: "18px",
+          border: "2px solid black", // Siyah border ekle
           boxShadow: "0px 4px 10px rgba(0,0,0,0.2)",
-          zIndex: 10000, // Uyarı overlay'in üstünde olsun
+          zIndex: 10000,
           textAlign: "center",
-          pointerEvents: "auto", // Yalnızca bu div tıklanabilir olsun
+          pointerEvents: "auto",
+          display: "flex",
+          alignItems: "center",
+          gap: "25px", // İkon ile yazı arasına boşluk bırak
         }}
       >
-        Hacı internetin yok! Şu internetini bi kontrol ediver. 
+       <MdWifiOff size={24} /> Lütfen internet bağlantınızı kontrol edin !
       </div>
     </div>
   );

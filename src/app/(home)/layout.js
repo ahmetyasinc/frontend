@@ -5,7 +5,7 @@ import Footer from "@/components/home_component/Footer";
 export default function Layout({ children }) {
     return (
         <div>
-            <main>
+            <main className="min-h-screen">
             <Header pageClass={0} />
                 {children}
             </main>
@@ -13,3 +13,4 @@ export default function Layout({ children }) {
         </div>
     );
 }
+

@@ -1,6 +1,5 @@
 import FeaturesTabs from "@/components/home_component/FeaturesTabs";
 import Footer from "@/components/home_component/Footer";
-import Hero from "@/components/home_component/Hero";
 import About from "@/components/home_component/About";
 import Header from "@/components/home_component/Header";
 import HomeClientComponent from "@/components/HomeClientComponent"; // ✅ Doğru
@@ -21,3 +20,5 @@ export default function Home() {
         </main>
     );
 }
+
+

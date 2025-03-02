@@ -1,3 +1,7 @@
+export const metadata = {
+    title: "Topluluk",
+    description: "Topluluk sayfası.",
+  };
 
 export default function Community() {
     return (

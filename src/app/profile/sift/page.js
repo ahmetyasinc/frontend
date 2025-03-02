@@ -1,3 +1,8 @@
+export const metadata = {
+    title: "Tarama",
+    description: "Tarama sayfası.",
+  };
+
 export default function Sift() {
     return (
         <div>

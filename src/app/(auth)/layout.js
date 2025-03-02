@@ -2,8 +2,9 @@ import "../../styles/css/scroll.css";
 
 export default function HomeLayout({ children }) {
     return (
-        <div>
+        <div  className="min-h-screen w-screen justify-center flex items-center hard-gradient">
             <main>{children}</main>
         </div>
     );
 }
+

@@ -46,3 +46,18 @@ body {
   text-align: center;
 }
 
+@layer utilities {
+  .hard-gradient {
+      background: linear-gradient(
+        135deg,
+        rgb(0, 0, 0) ,
+        rgb(0, 39, 83) 65%,
+        #031636 65%,
+        rgb(0, 0, 0) 100%
+      );
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      background-size: cover;
+  }
+}
+

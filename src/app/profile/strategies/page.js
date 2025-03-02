@@ -1,3 +1,8 @@
+export const metadata = {
+    title: "Stratejiler",
+    description: "Stratejiler sayfası.",
+  };
+
 export default function Strategies() {
     return (
         <div>

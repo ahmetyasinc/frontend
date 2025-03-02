@@ -8,7 +8,7 @@ const PopupModal = ({ showModal, handleClose, handleConfirm }) => {
       <div className="modal">
         <h3>Çıkış yapmak istediğinize emin misiniz?</h3>
         <button onClick={handleClose}>Vazgeç</button>
-        <button onClick={handleConfirm}>Evet</button>
+        <button onClick={handleConfirm}>Çıkış Yap</button>
       </div>
     </div>
   );

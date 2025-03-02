@@ -7,27 +7,32 @@ export default function Hero({ userCount, traderCount, strategyCount, botCount }
           <div className="row align-items-center">
             <div className="col-lg-6">
               <div className="hero-content" data-aos="fade-up" data-aos-delay="200">
-                <div className="company-badge mb-4">
-                  <i className="bi bi-gear-fill me-2 "></i>
+              <div className="text-left">
+                <div className="company-badge mb-4 flex items-center">
+                  <i className="bi bi-gear-fill me-2"></i>
                   Otomatik Alım Satım Robotu
                 </div>
-                <h1 className="mb-4">
+                  
+                <h1 className="mb-4 text-left font-sans">
                   Balina ile<br />
                   Eşsiz Stratejiler Oluştur <br />
                   <span className="accent-text">Kâr Etmeye Başla</span>
                 </h1>
-                <div className="container">
-                <div className="row">
-                  <div className="col-lg-12 mx-auto">
-                    <p className="mb-4 mb-md-5 text-justify">
-                      Balina ile kendinize has stratejiler oluşturabilir, oluşturduğunuz stratejilerin geçmişte gösterdikleri performansı görebilir ve size tanıdığımız özel imkanlar ile karlı hale getirebilirsiniz.
-                      Balina Tarama özelliği ile oluşturduğunuz stratejilerin o an verdiği sinyalleri görebilirsiniz.
-                    </p>
+                  
+                <div className="container text-left">
+                  <div className="row">
+                    <div className="col-lg-12 mx-auto text-left">
+                      <p className="mb-4 mb-md-5">
+                        Balina ile kendinize has stratejiler oluşturabilir, oluşturduğunuz stratejilerin geçmişte gösterdikleri performansı görebilir ve size tanıdığımız özel imkanlar ile karlı hale getirebilirsiniz.
+                        Balina Tarama özelliği ile oluşturduğunuz stratejilerin o an verdiği sinyalleri görebilirsiniz.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-                <div className="hero-buttons">
+
+                <div className="hero-buttons text-left">
                   <Link href="/deneme" className="btn btn-primary me-0 me-sm-2 mx-1">Şimdi Başla</Link>
                   <a href="https://www.youtube.com/watch?v=Qa8A0qjh27Y" className="btn btn-link mt-2 mt-sm-0 glightbox">
                     <i className="bi bi-play-circle me-1"></i>

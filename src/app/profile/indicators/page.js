@@ -1,3 +1,8 @@
+export const metadata = {
+    title: "Göstergeler",
+    description: "Göstergeler sayfası.",
+  };
+
 export default function Indicators() {
     return (
         <div>

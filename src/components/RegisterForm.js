@@ -1,28 +1,23 @@
-"use client";  // ✅ Bu bileşen artık client-side çalışacak
+"use client";
 
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import axios from "axios";
-import apiClient from "@/utils/apiclient"; // ✅ API istekleri için apiClient
-import { useAuth } from "@/context/AuthContext"; // ✅ AuthContext burada kullanılabilir
+import { useAuth } from "@/context/AuthContext";
 
 export default function RegisterForm() {
     const router = useRouter();
     const { setIsAuthenticated } = useAuth();
     const [formData, setFormData] = useState({
-        firstName: "", 
-        lastName: "",  
+        firstName: "",
+        lastName: "",
         username: "",
         email: "",
         password: "",
         confirmPassword: "",
     });
-
-    useEffect(() => {
-        console.log("Register sayfası yüklendi.");
-    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -34,137 +29,139 @@ export default function RegisterForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Kayıt verileri:", formData);
-
         if (formData.password !== formData.confirmPassword) {
-            toast.error("Şifreler uyuşmuyor!");
+            toast.error("Şifreler eşleşmiyor!");
             return;
         }
-
         try {
-            const response = await apiClient.post("/api/register/", formData);
-            console.log(response);
-            
-            if (response.data?.message === "User created successfully") {
-                toast.success("Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...");
+            const response = await axios.post("http://127.0.0.1:8000/api/register/", formData, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
 
-                setTimeout(() => {
-                    router.push("/login"); // ✅ Kullanıcıyı giriş sayfasına yönlendiriyoruz
-                }, 2000);
-            } else {
-                throw new Error(response.data?.message || "Kayıt başarısız!");
+            if (response.data?.access_token) {
+                toast.success("Kayıt başarılı! Hoş geldiniz 👋");
+                localStorage.setItem("access_token", response.data.access_token);
+                localStorage.setItem("refresh_token", response.data.refresh_token);
+                setIsAuthenticated(true);
+                router.push("/profile");
             }
         } catch (error) {
-            console.error("Kayıt hatası:", error.response?.data?.message || error.message);
             toast.error(error.response?.data?.message || "Kayıt başarısız!");
         }
     };
 
     return (
-        <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
-            <h3 className="text-white text-2xl font-semibold mb-6 text-center">Kayıt Ol</h3>
-    
-            <form onSubmit={handleSubmit}>
-                {/* İsim ve Soyisim - Küçük ve Yan Yana */}
-                <div className="mb-4 flex space-x-4">
-                    <div className="w-1/2">
-                        <label htmlFor="firstName" className="block text-white text-sm mb-1">İsim</label>
+        <div className="py-12">
+<button
+  onClick={() => router.push("/")}
+  className="absolute top-3 left-2 bg-[#363636] text-center w-40 rounded-[8px] h-10 text-white text-xl font-semibold group"
+  type="button"
+>
+  <div
+    className="bg-[rgb(38,135,192)] rounded-[5px] h-8 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[151px] z-10 duration-500"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 1024 1024"
+      height="25px"
+      width="25px"
+    >
+      <path
+        d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z"
+        fill="#000000"
+      ></path>
+      <path
+        d="m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z"
+        fill="#000000"
+      ></path>
+    </svg>
+  </div>
+  <p className="translate-x-6 translate-y-1">Anasayfa</p>
+</button>
+
+            <div className="bg-white/0 backdrop-blur-lg border border-gray-400 rounded-lg shadow-lg overflow-hidden w-full max-w-md">
+                <div className="p-8">
+                    <h2 className="text-center text-3xl font-extrabold text-white">Kayıt Ol</h2>
+                    <p className="mt-4 text-center text-gray-400">Balina Yatırıma kayıt olun</p>
+
+                    <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <input
+                                    type="text"
+                                    name="firstName"
+                                    placeholder="İsim"
+                                    className="appearance-none block w-full px-3 py-3 border border-gray-700 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    required
+                                    value={formData.firstName}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div>
+                                <input
+                                    type="text"
+                                    name="lastName"
+                                    placeholder="Soyisim"
+                                    className="appearance-none block w-full px-3 py-3 border border-gray-700 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    required
+                                    value={formData.lastName}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                        </div>
                         <input
                             type="text"
-                            id="firstName"
-                            name="firstName"
-                            placeholder="İsim"
-                            className="w-full p-2 rounded-lg bg-gray-700 text-white border border-gray-600 text-sm"
-                            value={formData.firstName}
+                            name="username"
+                            placeholder="Kullanıcı Adı"
+                            className="appearance-none block w-full px-3 py-3 border border-gray-700 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            required
+                            value={formData.username}
                             onChange={handleChange}
                         />
-                    </div>
-                    <div className="w-1/2">
-                        <label htmlFor="lastName" className="block text-white text-sm mb-1">Soyisim</label>
                         <input
-                            type="text"
-                            id="lastName"
-                            name="lastName"
-                            placeholder="Soyisim"
-                            className="w-full p-2 rounded-lg bg-gray-700 text-white border border-gray-600 text-sm"
-                            value={formData.lastName}
+                            type="email"
+                            name="email"
+                            placeholder="E-Posta"
+                            className="appearance-none block w-full px-3 py-3 border border-gray-700 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            required
+                            value={formData.email}
                             onChange={handleChange}
                         />
-                    </div>
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Şifre"
+                            className="appearance-none block w-full px-3 py-3 border border-gray-700 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            required
+                            value={formData.password}
+                            onChange={handleChange}
+                        />
+                        <input
+                            type="password"
+                            name="confirmPassword"
+                            placeholder="Şifreyi Onayla"
+                            className="appearance-none block w-full px-3 py-3 border border-gray-700 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            required
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                        />
+                        <button
+                            type="submit"
+                            className="group relative w-full flex justify-center py-3 px-4 border-transparent text-sm font-medium rounded-md text-gray-900 bg-[hsl(221,60%,52%)] hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            Kayıt Ol
+                        </button>
+                    </form>
                 </div>
-    
-                {/* Kullanıcı Adı */}
-                <div className="mb-4">
-                    <label htmlFor="username" className="block text-white mb-2">Kullanıcı Adı</label>
-                    <input
-                        type="text"
-                        id="username"
-                        name="username"
-                        placeholder="Kullanıcı Adı"
-                        className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600"
-                        value={formData.username}
-                        onChange={handleChange}
-                    />
-                </div>
-    
-                {/* E-Posta */}
-                <div className="mb-4">
-                    <label htmlFor="email" className="block text-white mb-2">E-Posta</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="E-Posta"
-                        className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600"
-                        value={formData.email}
-                        onChange={handleChange}
-                    />
-                </div>
-    
-                {/* Şifre */}
-                <div className="mb-4">
-                    <label htmlFor="password" className="block text-white mb-2">Şifre</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="Şifre"
-                        className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600"
-                        value={formData.password}
-                        onChange={handleChange}
-                    />
-                </div>
-    
-                {/* Şifreyi Onayla */}
-                <div className="mb-4">
-                    <label htmlFor="confirmPassword" className="block text-white mb-2">Şifreyi Onayla</label>
-                    <input
-                        type="password"
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        placeholder="Şifreyi Tekrar Girin"
-                        className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                    />
-                </div>
-    
-                {/* Zaten hesabın var mı? */}
-                <div className="mb-4 text-right">
-                    <Link href="/login" className="text-blue-400 hover:underline">
-                        Zaten bir hesabın var mı? Giriş Yap
+                <div className="px-8 py-4 bg-white/10 backdrop-blur-lg text-center">
+                    <span className="text-gray-400">Zaten bir hesabın var mı?</span>
+                    <Link href="/login" className="font-medium text-indigo-500 hover:text-indigo-400">
+                        Giriş Yap
                     </Link>
                 </div>
-    
-                {/* Kayıt Ol Butonu */}
-                <button
-                    type="submit"
-                    className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-all"
-                >
-                    Kayıt Ol
-                </button>
-            </form>
+            </div>
         </div>
     );
-    
 }
