@@ -826,7 +826,10 @@ section,
   position: relative;
   text-align: center;
   z-index: 1;
+  top: -60px; /* ✅ Yukarı kaldır (Değerini artırarak daha fazla kaldırabilirsin) */
+  left: 40px; /* ✅ Sağa taşı (Değerini artırarak daha fazla sağa kaydırabilirsin) */
 }
+
 
 .hero .hero-image img {
   max-width: 100%;

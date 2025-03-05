@@ -149,7 +149,7 @@ export default function RegisterForm() {
                         />
                         <button
                             type="submit"
-                            className="group relative w-full flex justify-center py-3 px-4 border-transparent text-sm font-medium rounded-md text-gray-900 bg-[hsl(221,60%,52%)] hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="group relative w-full flex justify-center py-3 px-4 border-transparent text-sm font-medium rounded-md text-gray-900 bg-[hsl(221,60%,52%)] hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         >
                             Kayıt Ol
                         </button>

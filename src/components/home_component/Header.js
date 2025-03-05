@@ -1,32 +1,25 @@
 "use client";
 import { useAuth } from "@/context/AuthContext";
-import { usePathname } from "next/navigation"; // Next.js'in built-in hook'u
+import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import { useLogout } from "@/utils/HookLogout"; // Yeni logout fonksiyonunu içe aktardık
 
 export default function Header({ pageClass }) {
     const router = useRouter();
-    const pathname = usePathname(); // Aktif sayfanın URL'sini al
+    const pathname = usePathname();
     const auth = useAuth();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const handleLogout = useLogout(); // useLogout hook'unu çağır
 
     if (!auth) {
         return null;
     }
-    
-    const { isAuthenticated, setIsAuthenticated } = auth;
 
-    const handleLogout = () => {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        sessionStorage.removeItem("access_token");
-        sessionStorage.removeItem("refresh_token");
-        setIsAuthenticated(false);
-        router.push("/");
-    };
+    const { isAuthenticated } = auth;
 
     // Dışarı tıklanınca dropdown menüyü kapat
     useEffect(() => {

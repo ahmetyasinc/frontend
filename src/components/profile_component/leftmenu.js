@@ -10,11 +10,13 @@ import { BiUser, BiCandles, BiLineChart, BiBroadcast, BiSearchAlt, BiGroup, BiLo
 import { IoMdArrowDropright } from "react-icons/io";
 import { IoWarningOutline } from "react-icons/io5";
 import { LuBot } from "react-icons/lu";
+import { useLogout } from "@/utils/HookLogout"; // Logout fonksiyonunu içe aktar
 
 const LeftMenu = ({ user }) => {
     const [isOpen, setIsOpen] = useState(false); // Sidebar açık mı?
     const [showLogoutModal, setShowLogoutModal] = useState(false); // Çıkış modalı açık mı?
     const pathname = usePathname(); // Mevcut URL'yi alır
+    const handleLogout = useLogout(); // useLogout hook'unu çağır
 
     const menuItems = [
         { href: "/profile", icon: <BiUser />, label: "Profil" },
@@ -28,15 +30,7 @@ const LeftMenu = ({ user }) => {
         { href: "/profile/community", icon: <BiGroup />, label: "Topluluk" },
     ];
 
-    // Çıkış yapma fonksiyonu
-    const handleLogout = () => {
-        console.log("Çıkış yapıldı!"); // Buraya çıkış işlemi için API çağrısı ekleyebilirsin
-        setShowLogoutModal(false); // Pop-up'ı kapat
-        setTimeout(() => {
-            window.location.href = "http://localhost:3000/"; // Anasayfaya yönlendir
-        }, 300); // Modal kapanmadan yönlendirme olmasın diye 300ms beklet
-    };
-
+    // Sidebar açılış ve kapanış animasyonları
     useEffect(() => {
         const toggleBtn = document.getElementById("toggleSidebar-left");
         if (toggleBtn) {
@@ -49,8 +43,6 @@ const LeftMenu = ({ user }) => {
     }, [isOpen]);
     
     
-    
-
     return (
         <div className={`sidebar-left ${isOpen ? "open" : ""}`}>
             <div className="sidebar-header-left">
@@ -65,7 +57,7 @@ const LeftMenu = ({ user }) => {
                         className={`sidebar-link ${pathname === item.href ? "active" : ""}`}
                     >
                         {pathname === item.href && (
-                            <IoMdArrowDropright className="absolute left-0 top-1/2 transform -translate-y-1/2 text-xl text-white" />
+                            <IoMdArrowDropright className="absolute left-[-10px] top-1/2 transform -translate-y-1/2 text-2xl text-white" />
                         )}
                         <span className="menu-icon">{item.icon}</span>
                         {isOpen && <span className="link-label">{item.label}</span>}

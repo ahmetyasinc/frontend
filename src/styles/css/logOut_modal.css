@@ -12,10 +12,10 @@
 }
 
 .logout-modal-content {
-    background-color: hsl(0, 0%, 0%);
+    background-color: hwb(0 13% 87%);
     padding: 20px;
     border-radius: 5px;
-    box-shadow: 0px 0px 3px hwb(0 100% 0%);
+    box-shadow: 0px 0px 2px rgb(0, 0, 0);
     text-align: center;
     width: 320px; /* Modal genişliği */
     position: relative;
@@ -27,7 +27,7 @@
 
 .logout-modal-content svg {
     font-size: 55px; /* İkonun boyutunu büyüt */
-    color: #ff0000c5; /* İkon rengi */
+    color: #ff0000e1; /* İkon rengi */
     margin-bottom: 12px; /* Yazı ile arasına boşluk bırak */
 }
 

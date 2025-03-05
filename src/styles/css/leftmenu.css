@@ -51,7 +51,7 @@
 .sidebar-header-left::after {
     content: "";
     position: absolute;
-    left: 10px; /* Kenarlardan biraz içeri al */
+    left: 14px; /* Kenarlardan biraz içeri al */
     bottom: -5px; /* Çizgiyi aşağı al */
     width: calc(100% - 30px); /* Çizginin kenarlara tam yapışmaması için */
     height: 2.5px; /* Çizgi kalınlığı */

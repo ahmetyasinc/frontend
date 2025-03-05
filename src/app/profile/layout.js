@@ -13,7 +13,7 @@ const ProfileLayout = async ({ children }) => {
   const user = await fetchUserFromAPI(); // Kullanıcı bilgilerini al
 
   return (
-    <div  className="min-h-screen w-screen justify-center flex items-center hard-gradient">
+    <div  className="min-h-screen w-screen hard-gradient">
       {/* LeftMenu'ye user'ı geçiyoruz */}
       <LeftMenu user={user} />
       <main>{children}</main>

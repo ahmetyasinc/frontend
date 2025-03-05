@@ -29,38 +29,32 @@ export default function LoginForm() {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        console.log("Giriş verileri:", formData);
-
+        e.preventDefault(); // Formun default submit davranışını engelle
+      
         try {
-            const response = await axios.post(
-                "http://127.0.0.1:8000/api/login/",
-                formData,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-
-            if (response.data?.access_token) {
-                console.log("Giriş başarılı:", response.data);
-                toast.success("Giriş başarılı! Hoş geldiniz 👋");
-
-                const storage = formData.rememberMe ? localStorage : sessionStorage;
-                storage.setItem("access_token", response.data.access_token);
-                storage.setItem("refresh_token", response.data.refresh_token);
-
-                setIsAuthenticated(true);
-                router.push("/profile");
-            } else {
-                throw new Error("Geçersiz yanıt! Token bulunamadı.");
-            }
+          console.log("Gönderilen JSON:", JSON.stringify(formData));
+      
+          const response = await fetch("http://localhost:8000/login/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData), // JSON formatında formData gönder
+            credentials: "include", // Cookie saklamak için gerekli
+          });
+      
+          if (response.ok) {
+            setIsAuthenticated(true); // Kullanıcıyı giriş yapmış olarak işaretle
+            router.push("/profile"); // Başarılı giriş sonrası yönlendirme
+          } else {
+            const errorData = await response.json(); // API hata detaylarını al
+            alert(`Giriş başarısız: ${errorData.detail}`);
+          }
         } catch (error) {
-            console.error("Giriş hatası:", error.response?.data?.message || "Bilinmeyen hata!");
-            toast.error(error.response?.data?.message || "Giriş başarısız!");
+          console.error("Giriş isteği başarısız:", error);
+          alert("Bir hata oluştu, lütfen tekrar deneyin.");
         }
-    };
+      };
 
     return (
         <div>
@@ -156,7 +150,7 @@ export default function LoginForm() {
                         <div>
                             <button
                                 type="submit"
-                                className="group relative w-full flex justify-center py-3 px-4 border-transparent text-sm font-medium rounded-md text-gray-900 bg-[hsl(221,60%,52%)] hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                className="group relative w-full flex justify-center py-3 px-4 border-transparent text-sm font-medium rounded-md text-gray-900 bg-[hsl(221,60%,52%)] hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             >
                             Giriş Yap
                             </button>
