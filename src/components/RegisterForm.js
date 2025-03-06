@@ -11,8 +11,8 @@ export default function RegisterForm() {
     const router = useRouter();
     const { setIsAuthenticated } = useAuth();
     const [formData, setFormData] = useState({
-        firstName: "",
-        lastName: "",
+        first_name: "",
+        last_name: "",
         username: "",
         email: "",
         password: "",
@@ -30,25 +30,22 @@ export default function RegisterForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (formData.password !== formData.confirmPassword) {
-            toast.error("Şifreler eşleşmiyor!");
+            console.error("Şifreler eşleşmiyor!");
             return;
         }
         try {
+            console.log(formData)
             const response = await axios.post("http://127.0.0.1:8000/api/register/", formData, {
                 headers: {
                     "Content-Type": "application/json",
                 },
             });
 
-            if (response.data?.access_token) {
-                toast.success("Kayıt başarılı! Hoş geldiniz 👋");
-                localStorage.setItem("access_token", response.data.access_token);
-                localStorage.setItem("refresh_token", response.data.refresh_token);
-                setIsAuthenticated(true);
-                router.push("/profile");
+            if (response.status === 200) {
+                router.push("/login");
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || "Kayıt başarısız!");
+            console.error(error.response?.data?.message || "Kayıt başarısız!");
         }
     };
 
@@ -91,22 +88,22 @@ export default function RegisterForm() {
                             <div>
                                 <input
                                     type="text"
-                                    name="firstName"
+                                    name="first_name"
                                     placeholder="İsim"
                                     className="appearance-none block w-full px-3 py-3 border border-gray-700 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                     required
-                                    value={formData.firstName}
+                                    value={formData.first_name}
                                     onChange={handleChange}
                                 />
                             </div>
                             <div>
                                 <input
                                     type="text"
-                                    name="lastName"
+                                    name="last_name"
                                     placeholder="Soyisim"
                                     className="appearance-none block w-full px-3 py-3 border border-gray-700 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                     required
-                                    value={formData.lastName}
+                                    value={formData.last_name}
                                     onChange={handleChange}
                                 />
                             </div>
