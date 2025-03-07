@@ -1,5 +1,8 @@
 import IndicatorHeader from "@/components/profile_component/indicatorHeader";
 
+import ChartComponent from "@/components/ChartComponent"; // Yolunu kontrol et!
+
+
 export const metadata = {
     title: "Göstergeler",
     description: "Göstergeler sayfası.",
@@ -19,6 +22,8 @@ export default function Indicators() {
             {/* İçerik Alanı */}
             <div className="mt-[56px]">
                 <h1 className="text-lg font-semibold">Grafik</h1>
+                <h1>Stock Chart</h1>
+                <ChartComponent />
                 {/* Buraya gösterge listesi eklenebilir */}
             </div>
         </div>
