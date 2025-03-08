@@ -21,8 +21,7 @@ export default function Indicators() {
 
             {/* İçerik Alanı */}
             <div className="mt-[56px]">
-                <h1 className="text-lg font-semibold">Grafik</h1>
-                <h1>Stock Chart</h1>
+                <h3 className="text-lg font-semibold">Grafik</h3>
                 <ChartComponent />
                 {/* Buraya gösterge listesi eklenebilir */}
             </div>
