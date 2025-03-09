@@ -9,10 +9,7 @@ export const metadata = {
 };
 
 export default function Indicators() {
-    const handleAddIndicator = () => {
-        console.log("Yeni gösterge ekleme butonuna basıldı.");
-        // Burada yeni bir gösterge ekleme modalı açabilirsin veya bir işlem yapabilirsin
-    };
+
 
     return (
         <div className="p-4">
@@ -21,7 +18,6 @@ export default function Indicators() {
 
             {/* İçerik Alanı */}
             <div className="mt-[56px]">
-                <h3 className="text-lg font-semibold">Grafik</h3>
                 <ChartComponent />
                 {/* Buraya gösterge listesi eklenebilir */}
             </div>
