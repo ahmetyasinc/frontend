@@ -12,7 +12,7 @@
     z-index: 1000;
     border-radius: 0 4px 0 0;
 }
-
+ 
 /* Sidebar açıkken */
 .sidebar-left.open {
     left: 0;
@@ -21,9 +21,7 @@
 /* Sidebar Header (Avatar ve Kullanıcı Adı İçin) */
 .sidebar-header-left {
     display: flex;
-    align-items: center;
     justify-content: space-between; /* Kullanıcı adı solda, avatar sağda */
-    padding: 1em;
     position: relative;
     width: 100%;
     box-sizing: border-box;
@@ -31,7 +29,6 @@
 
 /* Kullanıcı adı sola hizalandı */
 .username-left {
-    font-size: 1.2em;
     margin: 0;
     color: white;
     flex-grow: 1; /* Kullanıcı adı genişleyerek sol tarafa oturur */
@@ -52,9 +49,9 @@
     content: "";
     position: absolute;
     left: 14px; /* Kenarlardan biraz içeri al */
-    bottom: -5px; /* Çizgiyi aşağı al */
+    bottom: 0px; /* Çizgiyi aşağı al */
     width: calc(100% - 30px); /* Çizginin kenarlara tam yapışmaması için */
-    height: 2.5px; /* Çizgi kalınlığı */
+    height: 2px; /* Çizgi kalınlığı */
     background: #000000; /* Çizgi rengi */
 }
 
@@ -150,14 +147,13 @@
 
 /* Profil Resmi Çerçevesi ve Efektleri */
 .profile-img {
-    width: 70px; /* Yeni genişlik */
+    width: 30px; /* Yeni genişlik */
     height: auto; /* Yükseklik otomatik */
     border-radius: 50%; /* Yuvarlak avatar */
-    border: 2px solid hwb(0 0% 100% / 0.822); /* çerçeve */
-    box-shadow: 0px 0px 8px hwb(0 100% 0% / 0.658); /* Hafif bir gölge efekti */
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.658); /* Hafif bir gölge efekti */
     margin-bottom: 10px;
-    margin-top: 5px;
-    margin-left: 8px;
+    margin-top: 10px;
+    margin-left: 18px;
 }
 
 /* Sidebar İçindeki İkon Ayarları */

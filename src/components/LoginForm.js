@@ -13,7 +13,6 @@ export default function LoginForm() {
     const [formData, setFormData] = useState({
         username: "",
         password: "",
-        rememberMe: false,
     });
 
     useEffect(() => {
@@ -34,7 +33,7 @@ export default function LoginForm() {
         try {
           console.log("Gönderilen JSON:", JSON.stringify(formData));
       
-          const response = await fetch("http://localhost:8000/login/", {
+          const response = await fetch("http://localhost:8000/api/login/", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
