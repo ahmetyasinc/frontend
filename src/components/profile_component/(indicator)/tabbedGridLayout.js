@@ -21,10 +21,14 @@ const FlexibleGridLayout = () => {
     };
   }, []);
 
+  // Farklı ekran boyutları için grid düzenleri
   const layouts = {
     lg: [
-      { i: "chart", x: 0, y: 0, w: 8, h: 10, minW: 6, maxW: 12, minH: 5, maxH: 17, isDraggable: false },  
-     // { i: "b", x: 0, y: 9, w: 2, h: 5 },
+      { i: "chart", x: 0, y: 0, w: 8, h: 10, minW: 6, maxW: 12, minH: 5, maxH: 15, isDraggable: false },  
+      { i: "b", x: 0, y: 9, w: 2, h: 5 },
+      { i: "c", x: 4, y: 0, w: 2, h: 2 },
+      { i: "d", x: 8, y: 8, w: 4, h: 6 },
+      { i: "e", x: 10, y: 10, w: 2, h: 2 },
     ],
   };
 
@@ -50,6 +54,18 @@ const FlexibleGridLayout = () => {
 
           <div key="chart" className="relative w-full h-full m-0">
               <StockChart />
+          </div>
+          <div key="b" className="bg-green-400 text-white flex items-center justify-center rounded-[2px] shadow">
+            Panel B
+          </div>
+          <div key="c" className="bg-red-400 text-white flex items-center justify-center rounded-[2px] shadow">
+            Panel C
+          </div>
+          <div key="d" className="bg-purple-400 text-white flex items-center justify-center rounded-[2px] shadow">
+            Panel D
+          </div>
+          <div key="e" className="bg-yellow-500 text-white flex items-center justify-center rounded-[2px] shadow">
+            Panel E
           </div>
         </ResponsiveGridLayout>
       )}
