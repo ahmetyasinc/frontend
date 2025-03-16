@@ -5,12 +5,11 @@ import { usePathname } from "next/navigation";
 import "../../styles/css/leftmenu.css"; // Kendi stil dosyanı import et
 import "../../styles/css/logOut_modal.css"; // Kendi stil dosyanı import et
 import { RiBtcLine } from "react-icons/ri";
-import { FaChessBishop } from "react-icons/fa";
 import { BiUser, BiCandles, BiLineChart, BiBroadcast, BiSearchAlt, BiGroup, BiLogOut, BiMenu, BiChevronLeft } from "react-icons/bi";
 import { IoMdArrowDropright } from "react-icons/io";
 import { IoWarningOutline } from "react-icons/io5";
 import { LuBot } from "react-icons/lu";
-import { useLogout } from "@/lib/utils/HookLogout"; // Logout fonksiyonunu içe aktar
+import { useLogout } from "@/utils/HookLogout"; // Logout fonksiyonunu içe aktar
 
 const LeftMenu = ({ user }) => {
     const [isOpen, setIsOpen] = useState(false); // Sidebar açık mı?
@@ -20,14 +19,13 @@ const LeftMenu = ({ user }) => {
 
     const menuItems = [
         { href: "/profile", icon: <BiUser />, label: "Profil" },
-        { href: "/profile/coins", icon: <RiBtcLine />, label: "Kripto varlıklar" }, // Bitcoin ikonu
+     //  { href: "/profile/coins", icon: <RiBtcLine />, label: "Kripto varlıklar" }, // Bitcoin ikonu
         { href: "/profile/indicators", icon: <BiCandles />, label: "İndikatörler" },
-        { href: "/profile/strategies", icon: <FaChessBishop />, label: "Stratejilerim" }, // Satranç taşı
         { href: "/profile/backtest", icon: <BiLineChart />, label: "Backtest" },
         { href: "/profile/apiconnect", icon: <BiBroadcast />, label: "API Bağlantısı" },
         { href: "/profile/bot", icon: <LuBot />, label: "Otomatik Botlarım" },
-        { href: "/profile/sift", icon: <BiSearchAlt />, label: "Strateji Tarama" },
-        { href: "/profile/community", icon: <BiGroup />, label: "Topluluk" },
+     //   { href: "/profile/sift", icon: <BiSearchAlt />, label: "Strateji Tarama" },
+     //  { href: "/profile/community", icon: <BiGroup />, label: "Topluluk" },
     ];
 
     // Sidebar açılış ve kapanış animasyonları

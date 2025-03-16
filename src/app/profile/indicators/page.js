@@ -1,5 +1,7 @@
 import IndicatorHeader from "@/components/profile_component/(indicator)/indicatorHeader";
-import StockChart from "@/components/profile_component/(indicator)/StockChart";
+import TabbedGridLayout from "@/components/profile_component/(indicator)/tabbedGridLayout";
+import 'react-grid-layout/css/styles.css';
+import 'react-resizable/css/styles.css';
 
 export const metadata = {
     title: "Göstergeler",
@@ -11,10 +13,7 @@ export default function Indicators() {
         <div>
             {/* Sayfa Üstündeki Header */}
             <IndicatorHeader />
-
-            <div className="pt-[56px]">
-                <StockChart />
-            </div>
+            <div className="mt-[56px]"><TabbedGridLayout className="flex justify-center items-center min-h-screen"/></div>
         </div>
     );
 }

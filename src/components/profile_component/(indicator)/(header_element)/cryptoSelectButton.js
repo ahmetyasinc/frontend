@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { IoMdSearch } from "react-icons/io";
 import { BsPinAngle, BsPinAngleFill } from "react-icons/bs";
+import useCryptoStore from "@/store/cryptoStore"; // Zustand Store'u import et
 
 const cryptosList = [
   "Bitcoin (BTC)", "Ethereum (ETH)", "Binance Coin (BNB)", "Cardano (ADA)", "Solana (SOL)",
@@ -10,10 +11,11 @@ const cryptosList = [
   "Chainlink (LINK)", "Tron (TRX)", "Hedera (HBAR)", "Stellar (XLM)", "Toncoin (TON)"
 ];
 
-const CryptoSelectButton = ({ selectedCrypto, setSelectedCrypto }) => {
+const CryptoSelectButton = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [pinned, setPinned] = useState([]); // Sabitlenenleri takip eder
+
+  const { pinned, togglePinned, selectedCrypto, setSelectedCrypto } = useCryptoStore(); // Zustand state'ini kullan
 
   // Kriptoları sıralama (sabitlenenler başa gelir)
   const sortedCryptos = [...pinned, ...cryptosList.filter(c => !pinned.includes(c))];
@@ -23,26 +25,16 @@ const CryptoSelectButton = ({ selectedCrypto, setSelectedCrypto }) => {
     crypto.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Sabitleme toggling
-  const togglePinned = (crypto) => {
-    setPinned((prevpinned) =>
-      prevpinned.includes(crypto)
-        ? prevpinned.filter(fav => fav !== crypto) // Çıkart
-        : [crypto, ...prevpinned] // Başa ekle
-    );
-  };
-
   return (
     <>
       {/* Kripto Seçim Butonu */}
       <button
-        className="pl-4 ml-2 flex items-center w-[200px] h-[40px] rounded bg-gray-800 hover:bg-gray-700 text-white overflow-hidden text-ellipsis whitespace-nowrap"
+        className="pl-4 ml-2 flex items-center w-[200px] h-[40px] rounded bg-gray-900 hover:bg-gray-800 text-white overflow-hidden text-ellipsis whitespace-nowrap"
         onClick={() => setIsModalOpen(true)}
       >
         <IoMdSearch className="text-[19px] mr-2" />
         <span className="ml-3">{selectedCrypto || "Kripto seçin"}</span>
       </button>
-
 
       {/* Modal */}
       {isModalOpen && (
@@ -77,7 +69,7 @@ const CryptoSelectButton = ({ selectedCrypto, setSelectedCrypto }) => {
                       key={crypto}
                       className="py-2 pl-12 pr-4 hover:bg-gray-700 cursor-pointer rounded-sm flex items-center justify-between"
                       onClick={() => {
-                        setSelectedCrypto(crypto);
+                        setSelectedCrypto(crypto); // Zustand state'ini güncelle
                         setIsModalOpen(false);
                       }}
                     >

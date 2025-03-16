@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { useLogout } from "@/lib/utils/HookLogout"; // Yeni logout fonksiyonunu içe aktardık
+import { useLogout } from "@/utils/HookLogout"; // Yeni logout fonksiyonunu içe aktardık
 
 export default function Header({ pageClass }) {
     const router = useRouter();

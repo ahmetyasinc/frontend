@@ -1,18 +1,16 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { BiChevronDown } from "react-icons/bi";
+import useCryptoStore from "@/store/cryptoStore"; // Zustand store'u import et
 
-const PeriodDropdown = ({ selectedOption, setSelectedOption }) => {
+const PeriodDropdown = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const options = ["1 dk", "3 dk", "5 dk", "15 dk", "30 dk", "1 saat", "2 saat", "4 saat", "1 gün", "1 hafta"];
+  const { selectedPeriod, setSelectedPeriod } = useCryptoStore(); // Zustand'dan state al
 
-  const handleSelect = (option) => {
-    setSelectedOption(option);
-    setIsDropdownOpen(false);
-  };
+  const options = ["1 dk", "3 dk", "5 dk", "15 dk", "30 dk", "1 saat", "2 saat", "4 saat", "1 gün", "1 hafta"];
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -30,10 +28,10 @@ const PeriodDropdown = ({ selectedOption, setSelectedOption }) => {
   return (
     <div className="relative" ref={dropdownRef}>
       <button
-        className="w-[106px] flex items-center bg-gray-800 hover:bg-gray-700 pl-3 py-2 rounded-md transition"
+        className="w-[106px] flex items-center bg-gray-900 hover:bg-gray-800 pl-3 py-2 rounded-md transition"
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
       >
-        {selectedOption}
+        {selectedPeriod}
         <BiChevronDown className="ml-auto text-[22px] mr-2" />
       </button>
 
@@ -43,7 +41,10 @@ const PeriodDropdown = ({ selectedOption, setSelectedOption }) => {
             <li
               key={option}
               className="py-2 hover:bg-gray-800 cursor-pointer text-left pl-4"
-              onClick={() => handleSelect(option)}
+              onClick={() => {
+                setSelectedPeriod(option); // Zustand state'ini güncelle
+                setIsDropdownOpen(false);
+              }}
             >
               {option}
             </li>

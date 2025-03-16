@@ -88,7 +88,7 @@
 
 /* İlk linki aşağı kaydır */
 .sidebar-links-left li:first-child {
-    margin-top: 25px;
+    margin-top: 15px;
 }
 
 /* Link hover efekti */

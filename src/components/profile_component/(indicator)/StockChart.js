@@ -1,33 +1,54 @@
-/*"use client";
-import { CrosshairMode } from "lightweight-charts"; // 📌 CrosshairMode ekle
+"use client";
+import { CrosshairMode } from "lightweight-charts"; 
 import { useEffect, useState, useRef } from "react";
 import { createChart } from "lightweight-charts";
+import { useLogout } from "@/utils/HookLogout"; 
+import useMagnetStore from "@/store/magnetStore"; // Zustand store'u import et
 
-export default function ChartComponent() {
+
+export default function ChartComponent({ symbol = "BTCUSDT", interval = "1w" }) {
     const chartContainerRef = useRef(null);
     const chartRef = useRef(null);
+    const priceLineRef = useRef(null);
     const [chartData, setChartData] = useState([]);
+    const handleLogout = useLogout();   
+    const { isMagnetMode } = useMagnetStore();
+
+        //lineStyle: LineStyle.Dashed,    Kesikli çizgi
+        // lineStyle: LineStyle.Solid,      ➝ Düz çizgi
+        // lineStyle: LineStyle.Dotted,     ➝ Noktalı çizgi
+        // lineStyle: LineStyle.Dashed,     ➝ Kesikli çizgi
+        // lineStyle: LineStyle.LargeDashed,  ➝ Büyük kesikli çizgi
+        // lineStyle: LineStyle.SparseDotted,  ➝ Seyrek noktalı çizgi 
 
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await fetch("http://localhost:8000/api/get-binance-data/", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        symbol: "BTCUSDT", // Buraya istediğin sembolü gönderebilirsin
-                        interval: "1h",    // Buraya istediğin zaman aralığını gönderebilirsin
-                    }),
-                });
+                const response = await fetch(
+                    `http://localhost:8000/api/get-binance-data/?symbol=${symbol}&interval=${interval}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        credentials: "include",
+                    }
+                );
+
+                if (response.status === 401) {
+                    const errorData = await response.json();
+                    if (["Token expired", "Invalid token"].includes(errorData.detail)) {
+                        alert("Oturum süresi doldu veya geçersiz token! Lütfen tekrar giriş yapın.");
+                        handleLogout();
+                        return;
+                    }
+                }
 
                 const data = await response.json();
 
                 if (data.status === "success" && data.data) {
-                    // FastAPI'den gelen veriyi Lightweight Charts formatına çevir
                     const formattedData = data.data.map((candle) => ({
-                        time: Math.floor(new Date(candle.timestamp).getTime() / 1000), // Unix timestamp (saniye cinsinden)
+                        time: Math.floor(new Date(candle.timestamp).getTime() / 1000), 
                         open: candle.open,
                         high: candle.high,
                         low: candle.low,
@@ -42,137 +63,106 @@ export default function ChartComponent() {
         }
 
         fetchData();
-    }, []);
-
+        
+    }, [symbol, interval]); 
 
     useEffect(() => {
         if (chartData.length === 0 || !chartContainerRef.current) return;
     
+        // 📌 Eğer önceki grafik varsa temizleyelim
+        if (chartRef.current) {
+            try {
+                chartRef.current.remove(); // 🔥 Önceki grafiği temizle
+            } catch (error) {
+                console.warn("Grafik temizleme hatası:", error);
+            }
+        }
+    
         // 🔹 Grafiği oluşturma ayarları
-        const chartOptions = { 
-            layout: { 
-                textColor: 'white', 
-                background: { type: 'solid', color: 'black' }  // Siyah arka plan
+        const chartOptions = {
+            layout: {
+                textColor: "white",
+                background: { type: "solid", color: "rgb(20, 24, 36)" },
             },
             grid: {
-                vertLines: {
-                    color: 'rgba(128, 128, 128, 0.3)',  // Gri ve %30 saydam dikey çizgiler
-                    style: 1, // Solid çizgi
-                },
-                horzLines: {
-                    color: 'rgba(128, 128, 128, 0.3)',  // Gri ve %30 saydam yatay çizgiler
-                    style: 1, // Solid çizgi
-                }
+                vertLines: { color: "rgba(128, 128, 128, 0.2)", style: 1 },
+                horzLines: { color: "rgba(128, 128, 128, 0.2)", style: 1 },
             },
             crosshair: {
-                mode: CrosshairMode.Normal // 🔥 Mıknatıs etkisini kapatır
-            }
+                mode: isMagnetMode ? CrosshairMode.Magnet : CrosshairMode.Normal,
+            }, 
         };
-      
+    
         // 🔹 Grafiği oluştur
         const chart = createChart(chartContainerRef.current, chartOptions);
-      
-        // 🔹 Mum grafiğini ekle ve stil ver
+        chartRef.current = chart;
+    
+        // 🔹 Mum grafiğini ekle
         const candleSeries = chart.addCandlestickSeries({
-            upColor: '#26a69a', 
-            downColor: '#ef5350', 
-            borderVisible: false, 
-            wickUpColor: '#26a69a', 
-            wickDownColor: '#ef5350'
+            upColor: "white",
+            downColor: "rgb(214, 0, 0)",
+            borderVisible: false,
+            wickUpColor: "rgb(214, 0, 0)",
+            wickDownColor: "rgb(214, 0, 0)",
         });
-      
+    
         candleSeries.setData(chartData);
-      
-        // 🔹 Grafiği içeriğe sığdır
         chart.timeScale().fitContent();
-      
-        // 🔹 Pencere boyutu değiştiğinde yeniden boyutlandır
-        const handleResize = () => {
-            chart.applyOptions({ width: chartContainerRef.current.clientWidth });
-        };
-      
-        window.addEventListener("resize", handleResize);
-      
-        // 🔹 Cleanup: Bileşen unmount olduğunda chart'ı kaldır
+    
+        // 🔹 Son fiyat çizgisini ekle
+        const lastPrice = chartData[chartData.length - 1]?.close;
+        if (lastPrice) {
+            priceLineRef.current = candleSeries.createPriceLine({
+                price: lastPrice,
+                color: "white",
+                lineWidth: 1,
+                lineStyle: 2,
+                axisLabelVisible: true,
+            });
+        }
+    
+        // 🔹 **Resize Observer ile grafik boyutunu güncelle**
+        const resizeObserver = new ResizeObserver(() => {
+            if (chartContainerRef.current) {
+                chart.applyOptions({
+                    width: chartContainerRef.current.clientWidth,
+                    height: chartContainerRef.current.clientHeight,
+                });
+            }
+        });
+    
+        resizeObserver.observe(chartContainerRef.current);
+    
+        // 🛑 Cleanup: Bileşen unmount olduğunda işlemleri temizle
         return () => {
-            window.removeEventListener("resize", handleResize);
-            chart.remove();
+            resizeObserver.disconnect();
+            if (chartRef.current) {
+                try {
+                    chartRef.current.remove();
+                } catch (error) {
+                    console.warn("Grafik temizlenirken hata oluştu:", error);
+                }
+            }
         };
-    }, [chartData]);
-  
-  
+    
+    }, [chartData]); // 🔥 `chartData` ve `isMagnetMode` değiştiğinde çalışır
+    
+
+// 🔥 Mıknatıs modu değiştiğinde sadece crosshair modunu güncelle!
+useEffect(() => {
+    if (chartRef.current) {
+        chartRef.current.applyOptions({
+            crosshair: {
+                mode: isMagnetMode ? CrosshairMode.Magnet : CrosshairMode.Normal,
+            },
+        });
+    }
+}, [isMagnetMode]); // 🟢 Sadece mıknatıs modu değiştiğinde çalışır!
+
 
     return (
-        <div>
-            <div ref={chartContainerRef} style={{ width: "100%", height: "400px" }}></div>
+        <div className="relative w-full h-full">
+            <div ref={chartContainerRef} className="absolute top-0 left-0 w-full h-full"></div>
         </div>
     );
-}*/
-
-
-"use client";
-import { useEffect, useRef } from "react";
-import { createChart, CrosshairMode } from "lightweight-charts";
-
-export default function ExampleChart() {
-    const chartContainerRef = useRef(null);
-
-    useEffect(() => {
-        if (!chartContainerRef.current) return;
-
-        // 📌 Grafik ayarları
-        const chart = createChart(chartContainerRef.current, {
-            width: chartContainerRef.current.clientWidth,
-            height: 400,
-            layout: {
-                background: { type: "solid", color: "#000" },
-                textColor: "white",
-            },
-            grid: {
-                vertLines: { color: "rgba(128, 128, 128, 0.3)" },
-                horzLines: { color: "rgba(128, 128, 128, 0.3)" },
-            },
-            crosshair: { mode: CrosshairMode.Normal },
-        });
-
-        // 📌 Mum Grafiği Serisi
-        const candleSeries = chart.addCandlestickSeries({
-            upColor: "#26a69a",
-            downColor: "#ef5350",
-            borderVisible: false,
-            wickUpColor: "#26a69a",
-            wickDownColor: "#ef5350",
-        });
-
-        // 📌 Örnek (dummy) veriler
-        const exampleData = [
-            { time: 1710000000, open: 43000, high: 43500, low: 42800, close: 43250 },
-            { time: 1710003600, open: 43250, high: 43800, low: 43100, close: 43600 },
-            { time: 1710007200, open: 43600, high: 44000, low: 43400, close: 43850 },
-            { time: 1710010800, open: 43850, high: 44200, low: 43700, close: 44050 },
-            { time: 1710014400, open: 44050, high: 44500, low: 43900, close: 44300 },
-        ];
-
-        // 📌 Grafiğe örnek veriyi ekle
-        candleSeries.setData(exampleData);
-
-        // 📌 Grafiği tam ekran sığdır
-        chart.timeScale().fitContent();
-
-        // 📌 Pencere boyutu değiştiğinde yeniden ölçekleme
-        const handleResize = () => {
-            chart.applyOptions({ width: chartContainerRef.current.clientWidth });
-        };
-
-        window.addEventListener("resize", handleResize);
-
-        // 📌 Cleanup: Bileşen kaldırıldığında grafik silinsin
-        return () => {
-            window.removeEventListener("resize", handleResize);
-            chart.remove();
-        };
-    }, []);
-
-    return <div ref={chartContainerRef} style={{ width: "100%", height: "400px" }} />;
 }
-

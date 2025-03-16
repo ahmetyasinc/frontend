@@ -1,20 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { FiNavigation } from "react-icons/fi";
 import { AiOutlineStar } from "react-icons/ai"; // Favorilerim ikonu
 import { MdOutlinePeopleAlt } from "react-icons/md"; // Topluluk ikonu
-import { BsPerson } from "react-icons/bs"; // Kişisel ikonu
-import { BiBarChartAlt2 } from "react-icons/bi"; // Teknikler ikonu
-import TechnicalIndicators from "../(modal_tabs)/technicalIndicator"; //bulsana dosyayı amına kodumun next.oe 
-import PersonalIndicators from "../(modal_tabs)/personalIndicator";
-import CommunityIndicators from "../(modal_tabs)/communityIndicator";
-import FavoriteIndicators from "../(modal_tabs)/favIndicator";
+import { BsPerson } from "react-icons/bs"; // Stratejilerim ikonu
+import MyStrategies from "../(modal_tabs)/myStrategies";
+import CommunityStrategy from "../(modal_tabs)/communityStrategy";
+import FavStrategies from "../(modal_tabs)/favStrategies";
+import { FaChessBishop } from "react-icons/fa";
 
 
-const IndicatorsButton = () => {
+const StrategyButton = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("Teknikler");
+  const [activeTab, setActiveTab] = useState("Stratejilerim");
   const [favorites, setFavorites] = useState([]);
 
   //Favorite ekleme fonksiyonu (state)
@@ -30,8 +28,7 @@ const IndicatorsButton = () => {
   };
 
   const tabs = [
-    { name: "Teknikler", icon: <BiBarChartAlt2 className="text-[18px]" /> },
-    { name: "Kişisel", icon: <BsPerson className="text-[18px]" /> },
+    { name: "Stratejilerim", icon: <BsPerson className="text-[18px]" /> },
     { name: "Topluluk", icon: <MdOutlinePeopleAlt className="text-[18px]" /> },
     { name: "Favorilerim", icon: <AiOutlineStar className="text-[18px]" /> },
   ];
@@ -39,14 +36,12 @@ const IndicatorsButton = () => {
   // İçeriği dinamik olarak getir
   const renderContent = () => {
     switch (activeTab) {
-      case "Teknikler":
-            return <TechnicalIndicators addFavorite={addFavorite} favorites={favorites} />;
-      case "Kişisel":
-        return <PersonalIndicators />;
+      case "Stratejilerim":
+        return <MyStrategies />;
       case "Topluluk":
-        return <CommunityIndicators />;
+        return <CommunityStrategy />;
       case "Favorilerim":
-        return <FavoriteIndicators favorites={favorites} addFavorite={addFavorite} />;
+        return <FavStrategies favorites={favorites} addFavorite={addFavorite} />;
       default:
         return <p className="text-white">İçerik bulunamadı.</p>;
     }
@@ -59,17 +54,17 @@ const IndicatorsButton = () => {
         className="flex items-center justify-center w-[130px] h-[40px] rounded-md transition-all duration-200 bg-gray-900 hover:bg-gray-800 text-white"
         onClick={() => setIsModalOpen(true)}
       >
-        <FiNavigation className="mr-2 text-[19px]" /> Göstergeler
+        <FaChessBishop className="mr-2 text-[19px]" /> Stratejiler
       </button>
 
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 ">
           <div className="bg-gray-900 text-white rounded-md w-[800px] h-[584px] shadow-lg flex flex-col relative">
-            
+
             {/* Modal Başlık Kısmı */}
             <div className="flex justify-between items-center px-6 py-4 border-b border-gray-700 h-16">
-              <h2 className="text-lg font-bold">Göstergeler</h2>
+              <h2 className="text-lg font-bold">Stratejiler</h2>
               <button
                 className="text-gray-400 hover:text-white text-3xl"
                 onClick={() => setIsModalOpen(false)}
@@ -85,7 +80,7 @@ const IndicatorsButton = () => {
                   <button
                     key={tab.name}
                     className={`flex items-center gap-2 py-2 px-4 text-left transition-all ${
-                      activeTab === tab.name ? "bg-gradient-to-r from-[#34476b] to-[rgb(21,106,109)] text-white px-4 rounded-3xl py-2 hover:bg-[rgba(15,19,73,0.76)]" : "hover:bg-gray-700"
+                      activeTab === tab.name ? "bg-gradient-to-r from-[#4c2164] to-[#44197e] text-white px-4 rounded-3xl py-2 hover:bg-[rgba(15,19,73,0.76)]" : "hover:bg-gray-700"
                     }`}
                     onClick={() => setActiveTab(tab.name)}
                   >
@@ -107,4 +102,4 @@ const IndicatorsButton = () => {
   );
 };
 
-export default IndicatorsButton;
+export default StrategyButton;

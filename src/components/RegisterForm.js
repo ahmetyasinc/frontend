@@ -30,25 +30,22 @@ export default function RegisterForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (formData.password !== formData.confirmPassword) {
-            toast.error("Şifreler eşleşmiyor!");
+            console.error("Şifreler eşleşmiyor!");
             return;
         }
         try {
+            console.log(formData)
             const response = await axios.post("http://127.0.0.1:8000/api/register/", formData, {
                 headers: {
                     "Content-Type": "application/json",
                 },
             });
 
-            if (response.data?.access_token) {
-                toast.success("Kayıt başarılı! Hoş geldiniz 👋");
-                localStorage.setItem("access_token", response.data.access_token);
-                localStorage.setItem("refresh_token", response.data.refresh_token);
-                setIsAuthenticated(true);
-                router.push("/profile");
+            if (response.status === 200) {
+                router.push("/login");
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || "Kayıt başarısız!");
+            console.error(error.response?.data?.message || "Kayıt başarısız!");
         }
     };
 
