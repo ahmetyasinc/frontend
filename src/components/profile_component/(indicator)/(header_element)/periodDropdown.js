@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState } from "react";
 import { BiChevronDown } from "react-icons/bi";
-import useCryptoStore from "@/store/cryptoStore"; // Zustand store'u import et
+import useCryptoStore from "@/store/cryptoPinStore"; // Zustand store'u import et
 
 const PeriodDropdown = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

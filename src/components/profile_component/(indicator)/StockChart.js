@@ -5,8 +5,7 @@ import { createChart } from "lightweight-charts";
 import { useLogout } from "@/utils/HookLogout"; 
 import useMagnetStore from "@/store/magnetStore"; // Zustand store'u import et
 
-
-export default function ChartComponent({ symbol = "BTCUSDT", interval = "1w" }) {
+export default function ChartComponent({ symbol = "BTCUSDT", interval = "1d" }) {
     const chartContainerRef = useRef(null);
     const chartRef = useRef(null);
     const priceLineRef = useRef(null);
@@ -64,6 +63,7 @@ export default function ChartComponent({ symbol = "BTCUSDT", interval = "1w" }) 
 
         fetchData();
         
+        
     }, [symbol, interval]); 
 
     useEffect(() => {
@@ -82,11 +82,11 @@ export default function ChartComponent({ symbol = "BTCUSDT", interval = "1w" }) 
         const chartOptions = {
             layout: {
                 textColor: "white",
-                background: { type: "solid", color: "rgb(20, 24, 36)" },
+                background: { type: "solid", color: "#111" },
             },
             grid: {
-                vertLines: { color: "rgba(128, 128, 128, 0.2)", style: 1 },
-                horzLines: { color: "rgba(128, 128, 128, 0.2)", style: 1 },
+                vertLines: { color: "#222", style: 1 },
+                horzLines: { color: "#222", style: 1 },
             },
             crosshair: {
                 mode: isMagnetMode ? CrosshairMode.Magnet : CrosshairMode.Normal,
@@ -96,6 +96,17 @@ export default function ChartComponent({ symbol = "BTCUSDT", interval = "1w" }) 
         // 🔹 Grafiği oluştur
         const chart = createChart(chartContainerRef.current, chartOptions);
         chartRef.current = chart;
+
+        chart.applyOptions({
+            watermark: {
+                color: '#222',
+                visible: true,
+                text: 'BTCUSDT',
+                fontSize: 18,
+                horzAlign: 'center',
+                vertAlign: 'center',
+            },
+        });
     
         // 🔹 Mum grafiğini ekle
         const candleSeries = chart.addCandlestickSeries({
@@ -108,18 +119,7 @@ export default function ChartComponent({ symbol = "BTCUSDT", interval = "1w" }) 
     
         candleSeries.setData(chartData);
         chart.timeScale().fitContent();
-    
-        // 🔹 Son fiyat çizgisini ekle
-        const lastPrice = chartData[chartData.length - 1]?.close;
-        if (lastPrice) {
-            priceLineRef.current = candleSeries.createPriceLine({
-                price: lastPrice,
-                color: "white",
-                lineWidth: 1,
-                lineStyle: 2,
-                axisLabelVisible: true,
-            });
-        }
+
     
         // 🔹 **Resize Observer ile grafik boyutunu güncelle**
         const resizeObserver = new ResizeObserver(() => {
@@ -131,6 +131,7 @@ export default function ChartComponent({ symbol = "BTCUSDT", interval = "1w" }) 
             }
         });
     
+
         resizeObserver.observe(chartContainerRef.current);
     
         // 🛑 Cleanup: Bileşen unmount olduğunda işlemleri temizle
@@ -145,7 +146,7 @@ export default function ChartComponent({ symbol = "BTCUSDT", interval = "1w" }) 
             }
         };
     
-    }, [chartData]); // 🔥 `chartData` ve `isMagnetMode` değiştiğinde çalışır
+    }, [chartData]); // 🔥 `chartData` değiştiğinde çalışır
     
 
 // 🔥 Mıknatıs modu değiştiğinde sadece crosshair modunu güncelle!
@@ -158,6 +159,7 @@ useEffect(() => {
         });
     }
 }, [isMagnetMode]); // 🟢 Sadece mıknatıs modu değiştiğinde çalışır!
+
 
 
     return (

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AiOutlineStar } from "react-icons/ai"; // Favorilerim ikonu
 import { MdOutlinePeopleAlt } from "react-icons/md"; // Topluluk ikonu
-import { BsPerson } from "react-icons/bs"; // Stratejilerim ikonu
+import { FaDice } from "react-icons/fa6";
 import MyStrategies from "../(modal_tabs)/myStrategies";
 import CommunityStrategy from "../(modal_tabs)/communityStrategy";
 import FavStrategies from "../(modal_tabs)/favStrategies";
@@ -28,7 +28,7 @@ const StrategyButton = () => {
   };
 
   const tabs = [
-    { name: "Stratejilerim", icon: <BsPerson className="text-[18px]" /> },
+    { name: "Stratejilerim", icon: <FaDice className="text-[19px]" /> },
     { name: "Topluluk", icon: <MdOutlinePeopleAlt className="text-[18px]" /> },
     { name: "Favorilerim", icon: <AiOutlineStar className="text-[18px]" /> },
   ];

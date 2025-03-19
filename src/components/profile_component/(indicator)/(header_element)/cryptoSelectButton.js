@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { IoMdSearch } from "react-icons/io";
 import { BsPinAngle, BsPinAngleFill } from "react-icons/bs";
-import useCryptoStore from "@/store/cryptoStore"; // Zustand Store'u import et
+import useCryptoStore from "@/store/cryptoPinStore"; // Zustand Store'u import et
 
 const cryptosList = [
   "Bitcoin (BTC)", "Ethereum (ETH)", "Binance Coin (BNB)", "Cardano (ADA)", "Solana (SOL)",
