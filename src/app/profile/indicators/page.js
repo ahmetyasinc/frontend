@@ -1,4 +1,7 @@
-import IndicatorHeader from "@/components/profile_component/indicatorHeader";
+import IndicatorHeader from "@/components/profile_component/(indicator)/indicatorHeader";
+import TabbedGridLayout from "@/components/profile_component/(indicator)/tabbedGridLayout";
+import 'react-grid-layout/css/styles.css';
+import 'react-resizable/css/styles.css';
 
 import ChartComponent from "@/components/ChartComponent"; // Yolunu kontrol et!
 
@@ -10,17 +13,12 @@ export const metadata = {
 
 export default function Indicators() {
 
-
     return (
-        <div className="p-4">
+        <div>
             {/* Sayfa Üstündeki Header */}
             <IndicatorHeader />
+            <div className="mt-[56px]"><TabbedGridLayout className="flex justify-center items-center min-h-screen"/></div>
 
-            {/* İçerik Alanı */}
-            <div className="mt-[56px]">
-                <ChartComponent />
-                {/* Buraya gösterge listesi eklenebilir */}
-            </div>
         </div>
     );
 }

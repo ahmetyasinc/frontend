@@ -1,3 +1,4 @@
+
 export const metadata = {
     title: "Bot Çalıştırma",
     description: "Oluşturulan botları çalıştırma sayfası.",
@@ -5,8 +6,10 @@ export const metadata = {
 
 export default function Bot() {
     return (
-        <div>
-            <h1>bot sayfası</h1>
-        </div>
+       <div>
+        <h1>Bot çalıştırma</h1>
+    </div>
+
+  
     );
 }

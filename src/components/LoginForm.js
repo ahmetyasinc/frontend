@@ -84,7 +84,7 @@ export default function LoginForm() {
   </div>
   <p className="translate-x-6 translate-y-1">Anasayfa</p>
 </button>
-            <div className="bg-white/0 backdrop-blur-lg border border-gray-400 rounded-lg shadow-xl overflow-hidden">
+            <div className="bg-white/0 backdrop-blur-lg border-[1px] border-gray-400 rounded-lg shadow-xl overflow-hidden">
                 <div className="p-8">
                     <h2 className="text-center text-3xl font-extrabold text-white">
                         Giriş Yap
