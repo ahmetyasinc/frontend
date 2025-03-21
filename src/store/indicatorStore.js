@@ -1,9 +1,37 @@
 import { create } from "zustand";
 
 const useIndicatorStore = create((set) => ({
+    tecnic: [],
+    community: [],
     indicators: [], // Kaydedilen indikatörler listesi
     favorites: [], // Favori indikatörler listesi
     isVisible: {}, // İndikatörlerin açık/kapalı durumlarını saklayan obje
+
+    setCommunityIndicators: (newIndicators) => set(() => {
+        const newFavorites = newIndicators.filter((indicator) => indicator.favorite);
+        return {
+            community: newIndicators,
+            favorites: newFavorites, // Favorileri güncelle
+        };
+    }),
+
+    setTecnicIndicators: (newIndicators) => set(() => {
+        const newFavorites = newIndicators.filter((indicator) => indicator.favorite);
+        return {
+            tecnic: newIndicators,
+            favorites: newFavorites, // Favorileri güncelle
+        };
+    }),
+
+    setPersonalIndicators: (newIndicators) => set(() => {
+        const newFavorites = newIndicators.filter((indicator) => indicator.favorite);
+        console.log("store")
+        console.log(newIndicators)
+        return {
+            indicators: newIndicators,
+            favorites: newFavorites, // Favorileri güncelle
+        };
+    }),
 
     addIndicator: (indicator) => set((state) => ({
         indicators: [...state.indicators, indicator]

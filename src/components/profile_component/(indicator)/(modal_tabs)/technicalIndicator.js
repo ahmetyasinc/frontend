@@ -1,38 +1,57 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { IoIosCode, IoIosStarOutline, IoMdSearch, IoMdStar } from "react-icons/io";
 import ShowHideButton from "./show_hide_button";
 import useIndicatorStore from "@/store/indicatorStore"; // Zustand Store'u import et
-import { useState } from "react";
 import CodeModal from "./CodeModal";
+import axios from "axios";
+
+axios.defaults.withCredentials = true; // Tüm axios isteklerinde cookie'yi göndermeyi etkinleştir
 
 const TechnicalIndicators = () => {
-    const { favorites, toggleFavorite } = useIndicatorStore();
-    const [searchTerm, setSearchTerm] = useState(""); // Arama çubuğu için state
+    const { favorites, toggleFavorite, setTecnicIndicators, tecnic } = useIndicatorStore();
+    const [searchTerm, setSearchTerm] = useState("");
     const [selectedIndicator, setSelectedIndicator] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // İndikatörler listesi
-    const indicators = [
-        { name: "RSI", id: 1, code: "// RSI hesaplama kodu..." },
-        { name: "MACD", id: 2, code: "// MACD hesaplama kodu..." },
-        { name: "Bollinger Bantları", id: 3, code: "// Bollinger Bantları hesaplama kodu..." },
-        { name: "MA", id: 4, code: "// MA hesaplama kodu..." },
-        { name: "Stokastik Osilatör", id: 5, code: "// Stokastik Osilatör hesaplama kodu..." },
-        { name: "Hacim", id: 6, code: "// Hacim hesaplama kodu..." },
-        { name: "Stokastik RSI", id: 7, code: "// Stokastik RSI hesaplama kodu..." },
-        { name: "Fisher", id: 8, code: "// Fisher hesaplama kodu..." },
-        { name: "SMI", id: 9, code: "// SMI hesaplama kodu..." },
-        { name: "Chande Momentum", id: 10, code: "// Chande Momentum hesaplama kodu..." },
-        { name: "ADX", id: 11, code: "// ADX hesaplama kodu..." },
-        { name: "ATR", id: 12, code: "// ATR hesaplama kodu..." },
-        { name: "DEMA", id: 13, code: "// DEMA hesaplama kodu..." },
-        { name: "WMA", id: 14, code: "// Hacim ağırlıklı Hareketli ortalama (WMA) hesaplama kodu..." },
-        { name: "MFI", id: 15, code: "// Para akış endeksi (MFI) hesaplama kodu..." },
-        { name: "Ichimoku Bulutu", id: 16, code: "// Ichimoku Bulutu hesaplama kodu..." },
-        { name: "Keltner Kanalı", id: 17, code: "// Keltner Kanalı hesaplama kodu..." },
-        { name: "Williams %R", id: 18, code: "// Williams %R hesaplama kodu..." },
-    ];
+    // API'den veri çekme fonksiyonu
+    useEffect(() => {
+
+        if (tecnic.length > 0) return; // Eğer daha önce veri çekildiyse tekrar çekme
+
+        const fetchIndicators = async () => {
+            try {
+                const response = await axios.get("http://localhost:8000/api/tecnic-indicators/");
+                const fetchedIndicators = response.data.tecnic_indicators || [];
+                setTecnicIndicators(fetchedIndicators);
+            } catch (error) {
+                console.error("Veri çekme hatası:", error);
+            }
+        };
+
+        fetchIndicators();
+    }, [tecnic.length, setTecnicIndicators]);
+
+    // Favori ekleme/kaldırma fonksiyonu
+    const handleToggleFavorite = async (indicator) => {
+        const isAlreadyFavorite = favorites.some((fav) => fav.id === indicator.id);
+        toggleFavorite(indicator);
+        
+        try {
+            if (isAlreadyFavorite) {
+                await axios.delete("http://localhost:8000/api/indicator-remove-favourite/", {
+                    data: { indicator_id: indicator.id }
+                });                
+            } else {
+                await axios.post("http://localhost:8000/api/indicator-add-favorite/", {
+                    indicator_id: indicator.id
+                });
+            }
+        } catch (error) {
+            console.error("Favori işlemi sırasında hata oluştu:", error);
+        }
+    };
 
     // Kod Modalını Açma Fonksiyonu
     const openCodeModal = (indicator) => {
@@ -56,7 +75,7 @@ const TechnicalIndicators = () => {
 
             {/* İndikatör Listesi */}
             <div className="flex flex-col gap-2 w-full mt-2 max-h-[440px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
-                {indicators
+                {tecnic
                     .filter((indicator) =>
                         indicator.name.toLowerCase().includes(searchTerm.toLowerCase())
                     )
@@ -69,7 +88,7 @@ const TechnicalIndicators = () => {
                             <div className="flex items-center">
                                 <button
                                     className="bg-transparent p-2 rounded-md hover:bg-gray-800"
-                                    onClick={() => toggleFavorite(indicator)}
+                                    onClick={() => handleToggleFavorite(indicator)}
                                 >
                                     {favorites.some((fav) => fav.id === indicator.id) ? (
                                         <IoMdStar className="text-lg text-yellow-500" />
@@ -97,7 +116,7 @@ const TechnicalIndicators = () => {
                     ))}
             </div>
 
-            {/* Kod Modalı (Burada ekliyoruz ki her zaman render edilsin) */}
+            {/* Kod Modalı */}
             <CodeModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} indicator={selectedIndicator} />
         </div>
     );

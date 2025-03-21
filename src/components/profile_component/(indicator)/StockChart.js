@@ -3,7 +3,9 @@ import { CrosshairMode } from "lightweight-charts";
 import { useEffect, useState, useRef } from "react";
 import { createChart } from "lightweight-charts";
 import { useLogout } from "@/utils/HookLogout"; 
-import useMagnetStore from "@/store/magnetStore"; // Zustand store'u import et
+import useMagnetStore from "@/store/magnetStore"; 
+import useCryptoStore from "@/store/cryptoPinStore"; 
+
 
 export default function ChartComponent({ symbol = "BTCUSDT", interval = "1d" }) {
     const chartContainerRef = useRef(null);
@@ -12,6 +14,7 @@ export default function ChartComponent({ symbol = "BTCUSDT", interval = "1d" }) 
     const [chartData, setChartData] = useState([]);
     const handleLogout = useLogout();   
     const { isMagnetMode } = useMagnetStore();
+    const { selectedCrypto, selectedPeriod } = useCryptoStore();
 
         //lineStyle: LineStyle.Dashed,    Kesikli çizgi
         // lineStyle: LineStyle.Solid,      ➝ Düz çizgi
@@ -23,8 +26,10 @@ export default function ChartComponent({ symbol = "BTCUSDT", interval = "1d" }) 
     useEffect(() => {
         async function fetchData() {
             try {
+                console.log(selectedCrypto.binance_symbol)
+                console.log(selectedPeriod)
                 const response = await fetch(
-                    `http://localhost:8000/api/get-binance-data/?symbol=${symbol}&interval=${interval}`,
+                    `http://localhost:8000/api/get-binance-data/?symbol=${selectedCrypto.binance_symbol || symbol}&interval=${selectedPeriod}`,
                     {
                         method: "GET",
                         headers: {
@@ -33,7 +38,7 @@ export default function ChartComponent({ symbol = "BTCUSDT", interval = "1d" }) 
                         credentials: "include",
                     }
                 );
-
+    
                 if (response.status === 401) {
                     const errorData = await response.json();
                     if (["Token expired", "Invalid token"].includes(errorData.detail)) {
@@ -42,9 +47,9 @@ export default function ChartComponent({ symbol = "BTCUSDT", interval = "1d" }) 
                         return;
                     }
                 }
-
+    
                 const data = await response.json();
-
+    
                 if (data.status === "success" && data.data) {
                     const formattedData = data.data.map((candle) => ({
                         time: Math.floor(new Date(candle.timestamp).getTime() / 1000), 
@@ -53,18 +58,18 @@ export default function ChartComponent({ symbol = "BTCUSDT", interval = "1d" }) 
                         low: candle.low,
                         close: candle.close,
                     }));
-
+    
                     setChartData(formattedData);
                 }
             } catch (error) {
                 console.error("Veri çekme hatası:", error);
             }
         }
-
+    
         fetchData();
-        
-        
-    }, [symbol, interval]); 
+    
+    }, [selectedCrypto, selectedPeriod]); // selectedCrypto değiştiğinde yeniden çalışır
+         
 
     useEffect(() => {
         if (chartData.length === 0 || !chartContainerRef.current) return;

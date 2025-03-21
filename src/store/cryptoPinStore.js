@@ -1,21 +1,24 @@
 import { create } from "zustand";
 
 const useCryptoStore = create((set) => ({
-    pinned: [], // Sabitlenen kriptolar
-    selectedCrypto: "BTCUSDT", // Seçilen kripto para
-    selectedPeriod: "4 saat", // Varsayılan zaman aralığı
+    coins: [],
+    pinned: [], 
+    selectedCrypto: { id: 1, name: "Bitcoin", symbol: "BTC", binance_symbol: "BTCUSDT" },
+    selectedPeriod: "4h",
 
     togglePinned: (crypto) => set((state) => {
         const isAlreadyPinned = state.pinned.includes(crypto);
         return {
             pinned: isAlreadyPinned
-                ? state.pinned.filter((item) => item !== crypto) // Sabitleneni çıkar
-                : [crypto, ...state.pinned], // Yeni sabitlenen en üste ekle
+                ? state.pinned.filter((item) => item !== crypto)
+                : [crypto, ...state.pinned],
         };
     }),
 
-    setSelectedCrypto: (crypto) => set({ selectedCrypto: crypto }), // Seçili kriptoyu güncelle
-    setSelectedPeriod: (period) => set({ selectedPeriod: period }) // Seçili zamanı güncelle
+    setCoins: (coinList) => set({coins: coinList}),
+    setPinned: (pinnedList) => set({ pinned: pinnedList }), // API'den gelen pinnedleri güncelle
+    setSelectedCrypto: (crypto) => set({ selectedCrypto: crypto }),
+    setSelectedPeriod: (period) => set({ selectedPeriod: period }),
 }));
 
 export default useCryptoStore;

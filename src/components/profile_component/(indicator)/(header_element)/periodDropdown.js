@@ -10,7 +10,7 @@ const PeriodDropdown = () => {
 
   const { selectedPeriod, setSelectedPeriod } = useCryptoStore(); // Zustand'dan state al
 
-  const options = ["1 dk", "3 dk", "5 dk", "15 dk", "30 dk", "1 saat", "2 saat", "4 saat", "1 gün", "1 hafta"];
+  const options = ["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "1d", "1w"];
 
   useEffect(() => {
     const handleClickOutside = (event) => {

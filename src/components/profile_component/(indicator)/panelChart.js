@@ -28,7 +28,7 @@ const generateRandomData = (endDate, numberOfDays, minValue = 10, maxValue = 100
 export default function PanelChart({ data, indicatorType, options }) {
   const chartContainerRef = useRef(null);
   const chartRef = useRef(null);
-  const [chartData, setChartData] = useState(generateRandomData("2025-03-10", 5000)); // Eğer veri yoksa rastgele veri üret
+  const [chartData, setChartData] = useState(generateRandomData("2025-03-10", 1000)); // Eğer veri yoksa rastgele veri üret
 
   useEffect(() => {
     if (!chartContainerRef.current || !chartData || chartData.length === 0) return;

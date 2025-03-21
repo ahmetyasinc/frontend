@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { IoMdAdd, IoMdClose } from "react-icons/io";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { IoMdAdd, IoMdClose, IoIosStarOutline, IoMdStar } from "react-icons/io";
 import { FaRegSave } from "react-icons/fa";
-import { IoIosStarOutline, IoMdStar } from "react-icons/io";
 import { HiOutlineTrash } from "react-icons/hi";
 import ShowHideButton from "./show_hide_button";
 import { SiRobinhood } from "react-icons/si";
 import CodeEditor from "../../CodeEditor";
 import useIndicatorStore from "@/store/indicatorStore";
+
+axios.defaults.withCredentials = true;
 
 const PersonalIndicators = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,54 +20,155 @@ const PersonalIndicators = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedIndicator, setSelectedIndicator] = useState(null);
 
+  const { favorites, toggleFavorite, setPersonalIndicators, indicators } = useIndicatorStore();
 
-  const { indicators, addIndicator, deleteIndicator, favorites, toggleFavorite } = useIndicatorStore();
+  useEffect(() => {
+    if (indicators.length > 0) return;
+    fetchIndicators();
+  }, []);
 
-  const handleSaveIndicator = () => {
-    if (indicatorName.trim() !== "" && indicatorCode.trim() !== "") {
-      if (editingIndicator) {
-        deleteIndicator(editingIndicator.id);
-        addIndicator({ name: indicatorName, code: indicatorCode, id: editingIndicator.id });
-        setEditingIndicator(null);
-      } else {
-        addIndicator({ name: indicatorName, code: indicatorCode, id: Date.now() });
+  const fetchIndicators = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/get-indicators/", {
+          withCredentials: true, // Cookie ile isteği gönder
+      });
+      if (response.data && response.data.indicators) {
+        setPersonalIndicators(response.data.indicators);
       }
-      setIndicatorName("");
-      setIndicatorCode("");
-      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Veri çekme hatası:", error);
     }
   };
 
-    const handleDeleteClick = (indicator) => {
-      setSelectedIndicator(indicator);
-      setShowDeleteModal(true);
+  const handleToggleFavorite = async (indicator) => {
+      const isAlreadyFavorite = favorites.some((fav) => fav.id === indicator.id);
+      toggleFavorite(indicator);
+
+      try {
+          if (isAlreadyFavorite) {
+              await axios.delete("http://localhost:8000/api/indicator-remove-favourite/", {
+                  data: { indicator_id: indicator.id }
+              });                
+          } else {
+              await axios.post("http://localhost:8000/api/indicator-add-favorite/", {
+                  indicator_id: indicator.id
+              });
+          }
+      } catch (error) {
+          console.error("Favori işlemi sırasında hata oluştu:", error);
+      }
   };
 
-   const closeDeleteModal = () => {
+  const handleSaveIndicator = async () => {
+    const { indicators, setPersonalIndicators } = useIndicatorStore.getState();
+  
+    if (!indicatorName.trim() || !indicatorCode.trim()) return;
+  
+    if (editingIndicator) {
+      // Güncelleme işlemi (PUT)
+      try {
+        await axios.put(
+          "http://localhost:8000/api/edit-indicator/",
+          {
+            id: editingIndicator.id,
+            name: indicatorName,
+            code: indicatorCode,
+          },
+          {
+            withCredentials: true, // Cookie'leri dahil et
+            headers: { "Content-Type": "application/json" }, // JSON formatında gönder
+          }
+        );
+  
+        // Zustand store'u güncelle
+        setPersonalIndicators(
+          indicators.map((ind) =>
+            ind.id === editingIndicator.id
+              ? { ...ind, name: indicatorName, code: indicatorCode }
+              : ind
+          )
+        );
+  
+        setEditingIndicator(null);
+      } catch (error) {
+        console.error("Güncelleme sırasında hata oluştu:", error);
+        return;
+      }
+    } else {
+      // Yeni indikatör ekleme (POST)
+      try {
+        const response = await axios.post(
+          "http://localhost:8000/api/add-indicator/",
+          {
+            name: indicatorName,
+            code: indicatorCode,
+          },
+          {
+            withCredentials: true, // Cookie'leri dahil et
+            headers: { "Content-Type": "application/json" }, // JSON formatında gönder
+          }
+        );
+        
+        // API'den dönen yeni veriyi Zustand store'a ekle
+        const newIndicator = response.data; // Backend, yeni eklenen veriyi dönmeli
+        console.log("new")
+        console.log(newIndicator)
+        setPersonalIndicators([...indicators, newIndicator]);
+      } catch (error) {
+        console.error("Yeni indikatör ekleme sırasında hata oluştu:", error);
+        return;
+      }
+    }
+  
+    resetModal();
+  };
+
+  const handleDeleteClick = (indicator) => {
+    setSelectedIndicator(indicator);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    const { indicators, setPersonalIndicators } = useIndicatorStore.getState();
+  
+    if (!selectedIndicator) return;
+  
+    try {
+      // API'ye DELETE isteği gönder
+      await axios.delete(`http://localhost:8000/api/delete-indicator/${selectedIndicator.id}/`, {
+        withCredentials: true, // Cookie bilgisini dahil etmek için
+      });
+  
+      // Eğer API başarılı olursa store'dan da kaldır
+      setPersonalIndicators(indicators.filter((ind) => ind.id !== selectedIndicator.id));
+  
+      resetDeleteModal();
+    } catch (error) {
+      console.error("Silme işlemi sırasında hata oluştu:", error);
+    }
+  };
+
+  const resetModal = () => {
+    setIndicatorName("");
+    setIndicatorCode("");
+    setIsModalOpen(false);
+  };
+
+  const resetDeleteModal = () => {
     setShowDeleteModal(false);
     setSelectedIndicator(null);
   };
-
-    const confirmDelete = () => {
-      if (selectedIndicator) {
-          deleteIndicator(selectedIndicator.id);
-      }
-      closeDeleteModal(); // Modalı kapat
-  };
-
-
- 
 
   return (
     <div className="text-white pt-2 flex flex-col items-center w-full">
       <div className="w-full max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
         {indicators.length === 0 ? (
-          <></>
+          <p className="text-center">İndikatör yok.</p>
         ) : (
           indicators.map((indicator) => (
             <div key={indicator.id} className="bg-gray-900 hover:bg-gray-800 flex items-center justify-between w-full h-[40px] mb-2">
               <div className="flex items-center pl-2">
-                <button className="bg-transparent p-2 rounded-md hover:bg-gray-800" onClick={() => toggleFavorite(indicator)}>
+                <button className="bg-transparent p-2 rounded-md hover:bg-gray-800" onClick={() => handleToggleFavorite(indicator)}>
                   {favorites.some((fav) => fav.id === indicator.id) ? (
                     <IoMdStar className="text-lg text-yellow-500" />
                   ) : (
@@ -91,29 +194,18 @@ const PersonalIndicators = () => {
                     <HiOutlineTrash className="text-red-700 hover:text-red-900 text-[19.5px] cursor-pointer"/>
                 </button>
 
-                 {showDeleteModal && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                        <div className="bg-gray-900 text-white rounded-md w-[400px] p-6 shadow-lg relative">
-                            <h2 className="text-lg font-bold mb-4">Silme Onayı</h2>
-                            <p>{selectedIndicator?.name} indikatörünü silmek istediğinize emin misiniz?</p>
-                            <div className="flex justify-end mt-4 gap-2">
-                                <button
-                                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded"
-                                    onClick={closeDeleteModal}
-                                >
-                                    Hayır
-                                </button>
-                                <button
-                                    className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded"
-                                    onClick={confirmDelete}
-                                >
-                                    Sil
-                                </button>
-                            </div>
-                        </div>
+                {showDeleteModal && (
+                  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                    <div className="bg-gray-900 text-white rounded-md w-[400px] p-6 shadow-lg relative">
+                      <h2 className="text-lg font-bold mb-4">Silme Onayı</h2>
+                      <p>{selectedIndicator?.name} indikatörünü silmek istediğinize emin misiniz?</p>
+                      <div className="flex justify-end mt-4 gap-2">
+                        <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded" onClick={resetDeleteModal}>Hayır</button>
+                        <button className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded" onClick={confirmDelete}>Sil</button>
+                      </div>
                     </div>
+                  </div>
                 )}
-
               </div>
             </div>
           ))

@@ -6,7 +6,7 @@ import useIndicatorStore from "@/store/indicatorStore"; // Zustand Store'u impor
 
 const FavoriteIndicators = () => {
     const { favorites, toggleFavorite } = useIndicatorStore(); // Zustand'dan state çek
-
+    
     return (
         <div className="text-white mt-2">
             {favorites.length === 0 ? (
