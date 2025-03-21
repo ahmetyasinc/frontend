@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Hero() {
     return (
-        <section id="about" className="about section">
+        <section id="about" className="about section mt-16">
   
         <div className="container" data-aos="fade-up" data-aos-delay="100">
   

@@ -67,7 +67,7 @@ const FeaturesTabs = () => {
   ];
 
   return (
-    <section className="features section">
+    <section className="features section mt-16">
       <div className="container">
         <div className="d-flex justify-content-center">
           <ul className="nav nav-tabs">

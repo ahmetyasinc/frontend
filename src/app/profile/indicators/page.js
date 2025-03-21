@@ -1,4 +1,7 @@
-import IndicatorHeader from "@/components/profile_component/indicatorHeader";
+import IndicatorHeader from "@/components/profile_component/(indicator)/indicatorHeader";
+import TabbedGridLayout from "@/components/profile_component/(indicator)/tabbedGridLayout";
+import 'react-grid-layout/css/styles.css';
+import 'react-resizable/css/styles.css';
 
 import ChartComponent from "@/components/ChartComponent"; // Yolunu kontrol et!
 
@@ -9,22 +12,13 @@ export const metadata = {
 };
 
 export default function Indicators() {
-    const handleAddIndicator = () => {
-        console.log("Yeni gösterge ekleme butonuna basıldı.");
-        // Burada yeni bir gösterge ekleme modalı açabilirsin veya bir işlem yapabilirsin
-    };
 
     return (
-        <div className="p-4">
+        <div>
             {/* Sayfa Üstündeki Header */}
             <IndicatorHeader />
+            <div className="mt-[56px]"><TabbedGridLayout className="flex justify-center items-center min-h-screen"/></div>
 
-            {/* İçerik Alanı */}
-            <div className="mt-[56px]">
-                <h3 className="text-lg font-semibold">Grafik</h3>
-                <ChartComponent />
-                {/* Buraya gösterge listesi eklenebilir */}
-            </div>
         </div>
     );
 }
