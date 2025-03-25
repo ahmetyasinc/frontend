@@ -1,112 +1,110 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { createChart } from "lightweight-charts"; // Hafif grafik çizimi için
+import { useEffect, useRef } from "react";
+import { createChart } from "lightweight-charts";
+import useIndicatorDataStore from "@/store/indicatorDataStore";
 import PropTypes from "prop-types";
 
-// 🔹 Rastgele veri üreten fonksiyon
-const generateRandomData = (endDate, numberOfDays, minValue = 10, maxValue = 100) => {
-  let data = [];
-  let currentDate = new Date(endDate);
+export default function PanelChart({ indicatorId }) {
+    const chartContainerRef = useRef(null);
+    const chartRef = useRef(null);
+    const { indicatorData } = useIndicatorDataStore();
 
-  // Belirtilen gün sayısını geriye giderek başlangıç tarihini belirle
-  currentDate.setDate(currentDate.getDate() - numberOfDays);
+    useEffect(() => {
+        const indicatorInfo = indicatorData[indicatorId];
+        if (!chartContainerRef.current || !indicatorInfo) return;
 
-  for (let i = 0; i < numberOfDays; i++) {
-    data.push({
-      time: currentDate.toISOString().split("T")[0], // YYYY-MM-DD formatında tarih
-      value: Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue, // Rastgele değer
-    });
-
-    // Bir sonraki güne geç
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-
-  return data;
-};
-
-export default function PanelChart({ data, indicatorType, options }) {
-  const chartContainerRef = useRef(null);
-  const chartRef = useRef(null);
-  const [chartData, setChartData] = useState(generateRandomData("2025-03-10", 1000)); // Eğer veri yoksa rastgele veri üret
-
-  useEffect(() => {
-    if (!chartContainerRef.current || !chartData || chartData.length === 0) return;
-
-    // 🔹 **Grafik oluştur**
-    const chart = createChart(chartContainerRef.current, {
-      width: chartContainerRef.current.clientWidth,
-      height: chartContainerRef.current.clientHeight,
-      layout: {
-        background: { color: "#111" },
-        textColor: "#FFF",
-      },
-      grid: {
-        vertLines: { color: "#222" },
-        horzLines: { color: "#222" },
-      },
-      timeScale: {visible: false,},
-      //handleScroll: false,
-      //handleScale: false, // Kullanıcı tarafından gelen özel ayarları uygula
-    });
-
-    chartRef.current = chart;
-
-    let series;
-    switch (indicatorType) {
-      case "RSI":
-        series = chart.addLineSeries({ color: "purple", lineWidth: 2 });
-        break;
-      case "MACD":
-        series = chart.addHistogramSeries({ color: "green" });
-        break;
-      case "Bollinger":
-        series = chart.addAreaSeries({
-          topColor: "rgba(33, 150, 243, 0.5)",
-          bottomColor: "rgba(33, 150, 243, 0.1)",
-          lineColor: "blue",
+        const { prints, indicator_result } = indicatorInfo;
+        const chart = createChart(chartContainerRef.current, {
+            width: chartContainerRef.current.clientWidth,
+            height: chartContainerRef.current.clientHeight,
+            layout: {
+                background: { color: "#111" },
+                textColor: "#FFF",
+            },
+            grid: {
+                vertLines: { color: "#222" },
+                horzLines: { color: "#222" },
+            },
+            timeScale: { visible: true },
         });
-        break;
-      default:
-        series = chart.addLineSeries({ color: "white", lineWidth: 2 });
-    }
 
-    series.setData(chartData);
+        chartRef.current = chart;
 
-    // 🔹 **Resize Observer ile grafik boyutunu güncelle**
-    const resizeObserver = new ResizeObserver(() => {
-      if (chartContainerRef.current) {
-        chart.applyOptions({
-          width: chartContainerRef.current.clientWidth,
-          height: chartContainerRef.current.clientHeight,
+        // 🔁 Tüm on_graph === false indikatörleri çiz
+        indicator_result
+            .filter((item) => item.on_graph === false)
+            .forEach(({ type, settings, data, name }) => {
+                let series;
+                switch (type) {
+                    case "line":
+                        series = chart.addLineSeries({
+                            color: settings?.color || "white",
+                            lineWidth: settings?.line_width || 2,
+                        });
+                        break;
+                    case "histogram":
+                        series = chart.addHistogramSeries({
+                            color: settings?.color || "green",
+                        });
+                        break;
+                    case "area":
+                        series = chart.addAreaSeries({
+                            topColor: settings?.color || "rgba(33, 150, 243, 0.5)",
+                            bottomColor: "rgba(33, 150, 243, 0.1)",
+                            lineColor: settings?.color || "blue",
+                        });
+                        break;
+                    default:
+                        series = chart.addLineSeries({
+                            color: "white",
+                            lineWidth: 2,
+                        });
+                }
+
+                // 1. Duplicate time değerlerini engelleyen map
+                const timeValueMap = new Map();
+                            
+                data.forEach(([time, value]) => {
+                    if (typeof time === "string" && value !== undefined) {
+                        const unixTime = Math.floor(new Date(time).getTime() / 1000); // ✅ UNIX timestamp
+                        timeValueMap.set(unixTime, value); // son değeri yazar
+                    }
+                });
+                
+                // 2. Sıralı diziye çevir
+                const formattedData = Array.from(timeValueMap.entries())
+                    .sort(([timeA], [timeB]) => timeA - timeB)
+                    .map(([time, value]) => ({ time, value }));
+                
+                console.log("formattedData (uniq & sorted):", formattedData);
+
+                series.setData(formattedData);
+            });
+
+        const resizeObserver = new ResizeObserver(() => {
+            if (chartContainerRef.current) {
+                chart.applyOptions({
+                    width: chartContainerRef.current.clientWidth,
+                    height: chartContainerRef.current.clientHeight,
+                });
+            }
         });
-      }
-    });
+        resizeObserver.observe(chartContainerRef.current);
 
-    resizeObserver.observe(chartContainerRef.current);
+        return () => {
+            resizeObserver.disconnect();
+            chart.remove();
+        };
+    }, [indicatorData, indicatorId]);
 
-    // 🛑 **Cleanup: Bileşen unmount olduğunda işlemleri temizle**
-    return () => {
-      resizeObserver.disconnect();
-      if (chartRef.current) {
-        try {
-          chartRef.current.remove();
-        } catch (error) {
-          console.warn("Grafik temizlenirken hata oluştu:", error);
-        }
-      }
-    };
-  }, [chartData, indicatorType, options]);
-
-  return (
-    <div className="relative w-full h-full">
-      <div ref={chartContainerRef} className="absolute top-0 left-0 w-full h-full"></div>
-    </div>
-  );
+    return (
+        <div className="relative w-full h-full">
+            <div ref={chartContainerRef} className="absolute top-0 left-0 w-full h-full" />
+        </div>
+    );
 }
 
 PanelChart.propTypes = {
-  data: PropTypes.array, // Eğer veri yoksa rastgele üretilecek
-  indicatorType: PropTypes.string.isRequired, // Zorunlu indikatör türü
-  options: PropTypes.object, // Opsiyonel ayarlar
+    indicatorId: PropTypes.string.isRequired,
 };

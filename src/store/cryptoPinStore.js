@@ -4,7 +4,7 @@ const useCryptoStore = create((set) => ({
     coins: [],
     pinned: [], 
     selectedCrypto: { id: 1, name: "Bitcoin", symbol: "BTC", binance_symbol: "BTCUSDT" },
-    selectedPeriod: "4h",
+    selectedPeriod: "1d",
 
     togglePinned: (crypto) => set((state) => {
         const isAlreadyPinned = state.pinned.includes(crypto);
